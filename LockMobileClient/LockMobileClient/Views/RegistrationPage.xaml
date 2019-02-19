@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:elements="clr-namespace:LockMobileClient.Elements;assembly=LockMobileClient"
+             x:Class="LockMobileClient.Views.RegistrationPage">
+  <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <elements:CustomEntry Grid.Row="1" Grid.Column="1"  Placeholder="Enter the secret code" PlaceholderColor="#BABABA" Text="{Binding SecretCode}" FontSize="16"/>
+            <Button Grid.Row="2" Grid.Column="1"  Text="Register device" BackgroundColor="#3897F0" TextColor="White" HeightRequest="50" VerticalOptions="End" Command="{Binding RegisternCmd}"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
