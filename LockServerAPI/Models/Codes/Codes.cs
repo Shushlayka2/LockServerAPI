@@ -1,4 +1,4 @@
-﻿namespace LockServerAPI.Models
+﻿namespace LockServerAPI.Models.Codes
 {
     public partial class Codes
     {

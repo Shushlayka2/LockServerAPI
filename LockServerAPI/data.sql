@@ -43,7 +43,7 @@ $$ language plpgsql;
 
 create or replace function encrypt_device_id() returns trigger as $encrypt_device_id$
 begin
-    new.id = crypt(new.id, gen_salt('bf'));
+    new.device_id = crypt(new.device_id, gen_salt('bf'));
     return new;
 end;
 $encrypt_device_id$ language plpgsql;

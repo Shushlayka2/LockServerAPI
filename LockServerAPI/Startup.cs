@@ -26,9 +26,10 @@ namespace LockServerAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddSingleton<IUnityContainer>(Container);
+            services.AddSingleton(Container);
             services.AddSingleton<IDataAccessService, DataAccessService>();
-            //services.AddDbContext<LockContext>(builder => builder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            //Uncomment when DatabaseContext will be necessary for controllers:
+            //services.AddDbContext<DatabaseContext>(builder => builder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

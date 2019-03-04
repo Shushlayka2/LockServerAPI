@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Unity;
 using Unity.Extension;
 
@@ -16,7 +17,10 @@ namespace LockServerAPI
         protected override void Initialize()
         {
             Container.RegisterInstance(Container);
-            Container.RegisterInstance<IConfiguration>(Configuration);
+            Container.RegisterInstance(Configuration);
+            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+            var options = optionsBuilder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")).Options;
+            Container.RegisterInstance(new DatabaseContext(options));
         }
     }
 }

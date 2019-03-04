@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LockServerAPI.Models.DataAccesses
+namespace LockServerAPI.Models.Codes
 {
     public interface ICodesDataAccess : IDisposable
     {

@@ -1,4 +1,5 @@
-﻿using LockServerAPI.Models.DataAccesses;
+﻿using LockServerAPI.Models.Codes;
+using LockServerAPI.Models.Locks;
 using Unity;
 using Unity.Extension;
 
@@ -10,6 +11,7 @@ namespace LockServerAPI.Models.BaseDataAccesses
         {
             Container.RegisterType<IDataAccessService, DataAccessService>();
             Container.RegisterType<ICodesDataAccess, CodesDataAccess>();
+            Container.RegisterType<ILocksDataAccess, LocksDataAccess>();
         }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using System;
 using System.Data;
 
-namespace LockServerAPI.Models.DataAccesses
+namespace LockServerAPI.Models.Codes
 {
     public class CodesDataAccess : BaseDataAccess, ICodesDataAccess
     {
@@ -14,7 +13,8 @@ namespace LockServerAPI.Models.DataAccesses
         /// Ctr
         /// </summary>
         /// <param name="configuration">Configuration</param>
-        public CodesDataAccess(IConfiguration configuration)
+        public CodesDataAccess(IConfiguration configuration, DatabaseContext database)
+            : base(database)
         {
             Configuration = configuration;
         }
@@ -42,10 +42,6 @@ namespace LockServerAPI.Models.DataAccesses
                         pgreader.Read();
                         result = pgreader.GetString(0);
                     }
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Handle exception 
                 }
                 finally
                 {

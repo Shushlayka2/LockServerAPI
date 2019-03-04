@@ -1,6 +1,8 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
-using LockServerAPI.Models.DataAccesses;
+using LockServerAPI.Models.Codes;
+using LockServerAPI.Models.Locks;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace LockServerAPI.Controllers
 {
@@ -18,19 +20,33 @@ namespace LockServerAPI.Controllers
         [HttpPost]
         public IActionResult IsCodeValid([FromBody] string value)
         {
-            string user_id;
-            using (var dataAccess = DataAccessService.GetDataAccess<ICodesDataAccess>())
+            try
             {
-                user_id = dataAccess.FindCode(value);
-            }
+                string lockId;
+                using (var dataAccess = DataAccessService.GetDataAccess<ICodesDataAccess>())
+                {
+                    lockId = dataAccess.FindCode(value);
+                }
 
-            if (user_id != null)
-            {
-                return new JsonResult(user_id);
+                if (lockId == null)
+                {
+                    return new UnauthorizedResult();
+                }
+
+                string deviceId;
+                using (var dataAccess = DataAccessService.GetDataAccess<ILocksDataAccess>())
+                {
+                    deviceId = dataAccess.RegisterLock(lockId);
+                }
+
+                //TODO: Transfer deviceId to OrangePI controller
+
+                return new JsonResult(deviceId);
+
             }
-            else
+            catch (Exception ex)
             {
-                return new UnauthorizedResult();
+                return StatusCode(500);
             }
         }
     }

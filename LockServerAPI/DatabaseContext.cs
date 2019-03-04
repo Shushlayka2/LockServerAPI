@@ -1,15 +1,16 @@
-﻿using LockServerAPI.Models;
+﻿using LockServerAPI.Models.Codes;
+using LockServerAPI.Models.Locks;
 using Microsoft.EntityFrameworkCore;
 
 namespace LockServerAPI
 {
-    public partial class LockContext : DbContext
+    public partial class DatabaseContext : DbContext
     {
-        public LockContext()
+        public DatabaseContext()
         {
         }
 
-        public LockContext(DbContextOptions<LockContext> options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options)
         {
         }
