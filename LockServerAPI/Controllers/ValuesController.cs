@@ -12,9 +12,9 @@ namespace LockServerAPI.Controllers
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return new JsonResult("test");
         }
 
         // GET api/values/5

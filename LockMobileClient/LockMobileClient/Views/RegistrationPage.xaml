@@ -16,8 +16,8 @@
                 <ColumnDefinition Width="10*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <elements:CustomEntry Grid.Row="1" Grid.Column="1"  Placeholder="Enter the secret code" PlaceholderColor="#BABABA" Text="{Binding SecretCode}" FontSize="16"/>
-            <Button Grid.Row="2" Grid.Column="1"  Text="Register device" BackgroundColor="#3897F0" TextColor="White" HeightRequest="50" VerticalOptions="End" Command="{Binding RegisternCmd}"/>
+            <elements:CustomEntry Grid.Row="1" Grid.Column="1"  Placeholder="Enter the secret code" PlaceholderColor="#BABABA" Text="{Binding SecretCode.Value}" FontSize="16"/>
+            <Button Grid.Row="2" Grid.Column="1"  Text="Register device" BackgroundColor="#3897F0" TextColor="White" HeightRequest="50" VerticalOptions="End" Command="{Binding RegisterCmd}"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

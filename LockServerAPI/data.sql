@@ -1,33 +1,26 @@
 begin transaction;
 
-drop table if exists referencedata.users cascade;
-drop table if exists referencedata.devices cascade;
+drop table if exists referencedata.locks cascade;
 drop table if exists referencedata.codes cascade;
 drop trigger if exists encrypt_code on referencedata.codes;
-drop trigger if exists encrypt_device_id on referencedata.devices;
+drop trigger if exists encrypt_device_id on referencedata.locks;
 drop function if exists encrypt_code();
 drop function if exists encrypt_device_id();
+drop function if exists search_code(text);
 drop function if exists search_device(text);
 drop extension if exists pgcrypto;
 
-create table referencedata.users
-(
-  id integer primary key,
-  name text not null,
-  email text not null unique
-);
-
-create table referencedata.devices
+create table referencedata.locks
 (
   id text primary key,
-  user_id integer references referencedata.users(id) on delete cascade
+  device_id text not null
 );
 
 create table referencedata.codes
 (
   id integer primary key,
   code text not null,
-  user_id integer references referencedata.users(id) on delete cascade
+  lock_id text not null
 );
 
 create extension pgcrypto;
@@ -42,6 +35,12 @@ $encrypt_code$ language plpgsql;
 create trigger encrypt_code before insert or update on referencedata.codes
 for each row execute procedure encrypt_code();
 
+create or replace function search_code(code_param text, out result text) as $$
+begin
+  select lock_id into result from referencedata.codes where code = crypt(code_param, code);
+end;
+$$ language plpgsql;
+
 create or replace function encrypt_device_id() returns trigger as $encrypt_device_id$
 begin
     new.id = crypt(new.id, gen_salt('bf'));
@@ -49,13 +48,13 @@ begin
 end;
 $encrypt_device_id$ language plpgsql;
 
-create trigger encrypt_device_id before insert or update on referencedata.devices
+create trigger encrypt_device_id before insert or update on referencedata.locks
 for each row execute procedure encrypt_device_id();
 
 create or replace function search_device(text)
 returns boolean as $$
 begin
-    perform  from referencedata.devices where id = crypt($1, id);
+    perform  from referencedata.locks where id = crypt($1, id);
     return FOUND;
 end;
 $$ language plpgsql;

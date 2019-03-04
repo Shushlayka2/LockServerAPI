@@ -1,6 +1,7 @@
 ﻿using LockMobileClient.Services;
+using LockMobileClient.ViewModels;
 using LockMobileClient.Views;
-using System;
+using Unity;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -9,9 +10,13 @@ namespace LockMobileClient
 {
     public partial class App : Application
     {
+        public IUnityContainer Container { get; } = new UnityContainer();
+
         public App()
         {
             InitializeComponent();
+            ContainerSetting();
+
             if (SettingsService.DeviceId == "")
             {
                 MainPage = new NavigationPage(new RegistrationPage());
@@ -20,11 +25,6 @@ namespace LockMobileClient
             {
 
             }
-        }
-
-        public void DisplayErrorAlert(string msg)
-        {
-            MainPage.DisplayAlert("Device configuration error", msg, "OK");
         }
 
         protected override void OnStart()
@@ -40,6 +40,11 @@ namespace LockMobileClient
         protected override void OnResume()
         {
             // Handle when your app resumes
+        }
+
+        void ContainerSetting()
+        {
+            Container.RegisterType<RegistrationViewModel>();
         }
     }
 }

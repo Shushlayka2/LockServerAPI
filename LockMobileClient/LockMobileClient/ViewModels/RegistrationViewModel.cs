@@ -1,35 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using LockMobileClient.Models;
+using LockMobileClient.Validations;
+using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace LockMobileClient.ViewModels
 {
-    public class RegistrationViewModel : INotifyPropertyChanged
+    public class RegistrationViewModel : BaseViewModel
     {
-        public ICommand RegisternCmd { get; }
+        public ICommand RegisterCmd { get; }
 
-        string _secretCode;
-        public string SecretCode
+        public ValidatableCode SecretCode { get; }
+
+        Action propChangedCallBack => (RegisterCmd as Command).ChangeCanExecute;
+
+        public RegistrationViewModel()
         {
-            get { return _secretCode; }
-            set
-            {
-                if (_secretCode != value)
-                {
-                    _secretCode = value;
-                    OnPropertyChanged("SecretCode");
-                }
-            }
+            RegisterCmd = new Command(async () => await Register(), () => SecretCode.IsValid);
+            SecretCode = new ValidatableCode(propChangedCallBack, new CodeValidator());
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propName)
+        async Task Register()
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
+
         }
     }
 }

@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using LockMobileClient.ViewModels;
+using Unity;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace LockMobileClient.Views
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class RegistrationPage : ContentPage
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class RegistrationPage : ContentPage
     {
-		public RegistrationPage ()
-		{
-			InitializeComponent ();
-		}
-	}
+        public RegistrationPage()
+        {
+            InitializeComponent();
+            BindingContext = (Application.Current as App).Container.Resolve<RegistrationViewModel>();
+        }
+    }
 }
