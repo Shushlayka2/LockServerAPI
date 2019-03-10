@@ -1,5 +1,4 @@
 ﻿using LockMobileClient.Services;
-using LockMobileClient.ViewModels;
 using LockMobileClient.Views;
 using Unity;
 using Xamarin.Forms;
@@ -12,11 +11,16 @@ namespace LockMobileClient
     {
         public IUnityContainer Container { get; } = new UnityContainer();
 
+
         public App()
         {
             InitializeComponent();
-            ContainerSetting();
+            Container.AddExtension(new BaseContainerExtension());
 
+#if DEBUG
+            Container.AddExtension(new Diagnostic());
+#endif
+            var test = Container.Resolve<IRemoteServerSyncProxy>();
             if (SettingsService.DeviceId == "")
             {
                 MainPage = new NavigationPage(new RegistrationPage());
@@ -40,11 +44,6 @@ namespace LockMobileClient
         protected override void OnResume()
         {
             // Handle when your app resumes
-        }
-
-        void ContainerSetting()
-        {
-            Container.RegisterType<RegistrationViewModel>();
         }
     }
 }

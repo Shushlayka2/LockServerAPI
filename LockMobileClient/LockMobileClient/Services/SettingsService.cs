@@ -1,31 +1,25 @@
-﻿using Plugin.Settings;
+﻿using PCLAppConfig;
+using Plugin.Settings;
 using Plugin.Settings.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LockMobileClient.Services
 {
     public static class SettingsService
     {
-        static ISettings AppSettings
-        {
-            get
-            {
-                return CrossSettings.Current;
-            }
-        }
+        private static ISettings CrossAppSettings = CrossSettings.Current;
 
-        public static string DeviceId
+        internal static string DeviceId
         {
             get
             {
-                return AppSettings.GetValueOrDefault("DeviceId", "");
+                return CrossAppSettings.GetValueOrDefault("DeviceId", "");
             }
             set
             {
-                AppSettings.AddOrUpdateValue("DeviceId", value);
+                CrossAppSettings.AddOrUpdateValue("DeviceId", value);
             }
         }
+
+        internal static string BaseAddress { get; } = ConfigurationManager.AppSettings["BaseAddress"];
     }
 }

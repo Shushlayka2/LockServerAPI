@@ -13,10 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerAPI", "ServerAPI", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LockServerAPI", "LockServerAPI\LockServerAPI.csproj", "{234119EC-013B-48AE-8742-7FCD806F5FD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaySummary.Android", "..\DaySummary\DaySummary.Android\DaySummary.Android.csproj", "{7CB4D32D-6000-448B-A8A6-AE2AC548DBF7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaySummary", "..\DaySummary\DaySummary\DaySummary.csproj", "{BF2EC308-571C-4C59-A9B0-8F221C0C6264}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,16 +35,6 @@ Global
 		{234119EC-013B-48AE-8742-7FCD806F5FD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{234119EC-013B-48AE-8742-7FCD806F5FD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{234119EC-013B-48AE-8742-7FCD806F5FD3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7CB4D32D-6000-448B-A8A6-AE2AC548DBF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7CB4D32D-6000-448B-A8A6-AE2AC548DBF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7CB4D32D-6000-448B-A8A6-AE2AC548DBF7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{7CB4D32D-6000-448B-A8A6-AE2AC548DBF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7CB4D32D-6000-448B-A8A6-AE2AC548DBF7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7CB4D32D-6000-448B-A8A6-AE2AC548DBF7}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{BF2EC308-571C-4C59-A9B0-8F221C0C6264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF2EC308-571C-4C59-A9B0-8F221C0C6264}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF2EC308-571C-4C59-A9B0-8F221C0C6264}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF2EC308-571C-4C59-A9B0-8F221C0C6264}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

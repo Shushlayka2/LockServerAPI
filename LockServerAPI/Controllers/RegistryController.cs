@@ -17,6 +17,12 @@ namespace LockServerAPI.Controllers
             DataAccessService = dataAccessService;
         }
 
+        [HttpGet]
+        public string Get()
+        {
+            return "test";
+        }
+
         [HttpPost]
         public IActionResult IsCodeValid([FromBody] string value)
         {

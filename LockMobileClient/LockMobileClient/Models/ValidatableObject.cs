@@ -1,9 +1,9 @@
 ﻿using LockMobileClient.Validations;
 using LockMobileClient.ViewModels;
+using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace LockMobileClient.Models
 {
@@ -12,24 +12,22 @@ namespace LockMobileClient.Models
         public List<IValidationRule<T>> Validations { get; } = new List<IValidationRule<T>>();
         public T Value { get; set; }
 
-        public bool IsValid;
+        [DependsOn(nameof(Value))]
+        public bool IsValid => Validations.TrueForAll(v => v.Validate(Value));
 
         readonly Action propertyChangedCallback;
 
         public ValidatableObject(Action propertyChangedCallback = null, params IValidationRule<T>[] validations)
         {
             this.propertyChangedCallback = propertyChangedCallback;
-            PropertyChanged += async (sender, e) => await Task.Run(() => OnValueChanged(sender, e));
             foreach (var val in validations)
             {
                 Validations.Add(val);
             }
         }
 
-        protected virtual void OnValueChanged(object sender, PropertyChangedEventArgs e)
+        protected virtual void OnValueChanged()
         {
-            IsValid = Validations.TrueForAll(v => v.Validate(Value));
-            propertyChangedCallback?.Invoke();
         }
     }
 }
