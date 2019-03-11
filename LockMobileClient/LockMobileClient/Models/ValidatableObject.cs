@@ -3,7 +3,6 @@ using LockMobileClient.ViewModels;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace LockMobileClient.Models
 {
@@ -26,8 +25,6 @@ namespace LockMobileClient.Models
             }
         }
 
-        protected virtual void OnValueChanged()
-        {
-        }
+        protected virtual void OnValueChanged() => propertyChangedCallback?.Invoke();
     }
 }

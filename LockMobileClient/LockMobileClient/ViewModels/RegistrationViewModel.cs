@@ -10,9 +10,9 @@ namespace LockMobileClient.ViewModels
 {
     public class RegistrationViewModel : BaseViewModel
     {
-        protected ICommand RegisterCmd { get; }
-        protected IRemoteServerSyncProxy RemoteServerSyncProxy { get; }
-        protected ValidatableCode SecretCode { get; }
+        public ICommand RegisterCmd { get; }
+        public IRemoteServerSyncProxy RemoteServerSyncProxy { get; }
+        public ValidatableCode SecretCode { get; }
 
         Action propChangedCallBack => (RegisterCmd as Command).ChangeCanExecute;
 
