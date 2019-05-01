@@ -7,10 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace LockServerAPI.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class UserAuthController : Controller
     {
         protected IDataAccessService DataAccessService { get; }
@@ -23,7 +24,7 @@ namespace LockServerAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody]LoginModel model)
+        public IActionResult Login([FromBody]LoginModel model)
         {
             if (ModelState.IsValid)
             {
