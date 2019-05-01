@@ -1,5 +1,6 @@
-﻿using LockServerAPI.Models.Codes;
-using LockServerAPI.Models.Locks;
+﻿using LockServerAPI.Models.Code;
+using LockServerAPI.Models.Lock;
+using LockServerAPI.Models.User;
 using Unity;
 using Unity.Extension;
 
@@ -10,8 +11,9 @@ namespace LockServerAPI.Models.BaseDataAccesses
         protected override void Initialize()
         {
             Container.RegisterType<IDataAccessService, DataAccessService>();
-            Container.RegisterType<ICodesDataAccess, CodesDataAccess>();
-            Container.RegisterType<ILocksDataAccess, LocksDataAccess>();
+            Container.RegisterType<ICodeDataAccess, CodeDataAccess>();
+            Container.RegisterType<ILockDataAccess, LockDataAccess>();
+            Container.RegisterType<IUserDataAccess, UserDataAccess>();
         }
     }
 }

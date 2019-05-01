@@ -1,5 +1,6 @@
-﻿using LockServerAPI.Models.Codes;
-using LockServerAPI.Models.Locks;
+﻿using LockServerAPI.Models.Code;
+using LockServerAPI.Models.Lock;
+using LockServerAPI.Models.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace LockServerAPI
@@ -15,15 +16,16 @@ namespace LockServerAPI
         {
         }
 
-        public virtual DbSet<Codes> Codes { get; set; }
-        public virtual DbSet<Locks> Locks { get; set; }
+        public virtual DbSet<Code> Codes { get; set; }
+        public virtual DbSet<Lock> Locks { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("adminpack")
                 .HasPostgresExtension("pgcrypto");
 
-            modelBuilder.Entity<Codes>(entity =>
+            modelBuilder.Entity<Code>(entity =>
             {
                 entity.ToTable("codes", "referencedata");
 
@@ -31,7 +33,7 @@ namespace LockServerAPI
                     .HasColumnName("id")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.Code)
+                entity.Property(e => e.CodeVal)
                     .IsRequired()
                     .HasColumnName("code");
 
@@ -40,7 +42,7 @@ namespace LockServerAPI
                     .HasColumnName("lock_id");
             });
 
-            modelBuilder.Entity<Locks>(entity =>
+            modelBuilder.Entity<Lock>(entity =>
             {
                 entity.ToTable("locks", "referencedata");
 
@@ -51,6 +53,23 @@ namespace LockServerAPI
                 entity.Property(e => e.DeviceId)
                     .IsRequired()
                     .HasColumnName("device_id");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("users", "referencedata");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasColumnName("username");
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasColumnName("password");
             });
         }
     }

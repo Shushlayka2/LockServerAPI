@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data;
 
-namespace LockServerAPI.Models.Codes
+namespace LockServerAPI.Models.User
 {
-    public class CodesDataAccess : BaseDataAccess, ICodesDataAccess
+    public class UserDataAccess : BaseDataAccess, IUserDataAccess
     {
         protected IConfiguration Configuration { get; }
 
@@ -13,34 +13,35 @@ namespace LockServerAPI.Models.Codes
         /// Ctr
         /// </summary>
         /// <param name="configuration">Configuration</param>
-        public CodesDataAccess(IConfiguration configuration, DatabaseContext database)
+        public UserDataAccess(IConfiguration configuration, DatabaseContext database)
             : base(database)
         {
             Configuration = configuration;
         }
 
         /// <summary>
-        /// Find code in database
+        /// Find user in database
         /// </summary>
-        /// <param name="code">Code</param>
+        /// <param name="user">User</param>
         /// <returns>User id</returns>
-        public string FindCode(string code)
+        public bool FindUser(string username, string password)
         {
-            string result = null;
+            var result = false;
             using (var conn = new NpgsqlConnection(Configuration.GetConnectionString("DefaultConnection")))
             {
-                var query = @"select * from search_code(:code)";
+                var query = @"select * from search_user(:username, :password)";
                 conn.Open();
                 try
                 {
                     var pgcom = new NpgsqlCommand(query, conn);
                     pgcom.CommandType = CommandType.Text;
-                    pgcom.Parameters.AddWithValue("code", code);
+                    pgcom.Parameters.AddWithValue("username", username);
+                    pgcom.Parameters.AddWithValue("password", password);
                     var pgreader = pgcom.ExecuteReader();
                     if (pgreader.HasRows)
                     {
                         pgreader.Read();
-                        result = pgreader.GetString(0);
+                        result = pgreader.GetBoolean(0);
                     }
                 }
                 finally

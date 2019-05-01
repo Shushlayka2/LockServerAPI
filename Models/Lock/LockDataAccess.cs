@@ -1,11 +1,11 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
 using System;
 
-namespace LockServerAPI.Models.Locks
+namespace LockServerAPI.Models.Lock
 {
-    public class LocksDataAccess : BaseDataAccess, ILocksDataAccess
+    public class LockDataAccess : BaseDataAccess, ILockDataAccess
     {
-        public LocksDataAccess(DatabaseContext database)
+        public LockDataAccess(DatabaseContext database)
             : base(database)
         {
         }
@@ -13,7 +13,7 @@ namespace LockServerAPI.Models.Locks
         public string RegisterLock(string id)
         {
             var deviceId = Guid.NewGuid().ToString();
-            Database.Locks.Add(new Locks()
+            Database.Locks.Add(new Lock()
             {
                 Id = id,
                 DeviceId = deviceId

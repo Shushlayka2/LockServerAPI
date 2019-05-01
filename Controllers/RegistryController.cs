@@ -1,6 +1,6 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
-using LockServerAPI.Models.Codes;
-using LockServerAPI.Models.Locks;
+using LockServerAPI.Models.Code;
+using LockServerAPI.Models.Lock;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -29,7 +29,7 @@ namespace LockServerAPI.Controllers
             try
             {
                 string lockId;
-                using (var dataAccess = DataAccessService.GetDataAccess<ICodesDataAccess>())
+                using (var dataAccess = DataAccessService.GetDataAccess<ICodeDataAccess>())
                 {
                     lockId = dataAccess.FindCode(value);
                 }
@@ -40,7 +40,7 @@ namespace LockServerAPI.Controllers
                 }
 
                 string deviceId;
-                using (var dataAccess = DataAccessService.GetDataAccess<ILocksDataAccess>())
+                using (var dataAccess = DataAccessService.GetDataAccess<ILockDataAccess>())
                 {
                     deviceId = dataAccess.RegisterLock(lockId);
                 }

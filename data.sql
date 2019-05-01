@@ -1,14 +1,25 @@
 begin transaction;
 
+drop table if exists referencedata.users cascade;
 drop table if exists referencedata.locks cascade;
 drop table if exists referencedata.codes cascade;
+drop trigger if exists encrypt_user on referencedata.users;
 drop trigger if exists encrypt_code on referencedata.codes;
 drop trigger if exists encrypt_device_id on referencedata.locks;
+drop function if exists encrypt_user();
 drop function if exists encrypt_code();
 drop function if exists encrypt_device_id();
+drop function if exists search_user(text, text);
 drop function if exists search_code(text);
 drop function if exists search_device(text);
 drop extension if exists pgcrypto;
+
+create table referencedata.users
+(
+  id integer primary key,
+  username text not null,
+  password text not null
+);
 
 create table referencedata.locks
 (
@@ -24,6 +35,24 @@ create table referencedata.codes
 );
 
 create extension pgcrypto;
+
+create or replace function encrypt_user() returns trigger as $encrypt_user$
+begin
+    new.password = crypt(new.password, gen_salt('bf'));
+    return new;
+end;
+$encrypt_user$ language plpgsql;
+
+create trigger encrypt_user before insert or update on referencedata.users
+for each row execute procedure encrypt_user();
+
+create or replace function search_user(username_param text, password_param text)
+returns boolean as $$
+begin
+    perform  from referencedata.users where username_param = username and password_param = crypt($1, password);
+    return FOUND;
+end;
+$$ language plpgsql;
 
 create or replace function encrypt_code() returns trigger as $encrypt_code$
 begin
