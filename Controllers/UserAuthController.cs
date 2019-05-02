@@ -12,7 +12,7 @@ namespace LockServerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserAuthController : Controller
+    public class UserAuthController : ControllerBase
     {
         protected IDataAccessService DataAccessService { get; }
         protected AuthOptions AuthOptions { get; }
@@ -21,12 +21,6 @@ namespace LockServerAPI.Controllers
         {
             DataAccessService = dataAccessService;
             AuthOptions = authOptions;
-        }
-
-        [HttpGet]
-        public string Get()
-        {
-            return "test";
         }
 
         [HttpPost]
@@ -71,7 +65,7 @@ namespace LockServerAPI.Controllers
                 expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            return Json(encodedJwt);
+            return new JsonResult(encodedJwt);
         }
     }
 }
