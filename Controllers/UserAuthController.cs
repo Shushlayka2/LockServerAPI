@@ -23,6 +23,12 @@ namespace LockServerAPI.Controllers
             AuthOptions = authOptions;
         }
 
+        [HttpGet]
+        public string Get()
+        {
+            return "test";
+        }
+
         [HttpPost]
         public IActionResult Login([FromBody]LoginModel model)
         {
