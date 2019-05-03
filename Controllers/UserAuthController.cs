@@ -24,7 +24,7 @@ namespace LockServerAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login([FromBody]LoginModel model)
+        public IActionResult Login([FromBody]LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +65,7 @@ namespace LockServerAPI.Controllers
                 expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            return new JsonResult(encodedJwt);
+            return new JsonResult(new UserViewModel(encodedJwt));
         }
     }
 }

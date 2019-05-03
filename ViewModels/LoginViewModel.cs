@@ -2,7 +2,7 @@
 
 namespace LockServerAPI.ViewModels
 {
-    public class LoginModel
+    public class LoginViewModel
     {
         [Required(ErrorMessage = "Username is not specified")]
         public string Username { get; set; }
