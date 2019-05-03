@@ -31,7 +31,7 @@ namespace LockServerAPI
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CodeVal)
                     .IsRequired()
@@ -61,7 +61,7 @@ namespace LockServerAPI
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Username)
                     .IsRequired()
