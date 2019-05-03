@@ -27,6 +27,7 @@ namespace LockServerAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddCors();
             services.AddSingleton(Container);
             services.AddSingleton<AuthOptions>();
             services.AddSingleton<IDataAccessService, DataAccessService>();
@@ -65,6 +66,7 @@ namespace LockServerAPI
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseCors(builder => builder.AllowAnyOrigin());
         }
     }
 }
