@@ -13,7 +13,6 @@ namespace LockServerAPI.Models.BaseDataAccesses
 
         public void Dispose()
         {
-            //TODO: Handle OnDispose behaviour
         }
     }
 }

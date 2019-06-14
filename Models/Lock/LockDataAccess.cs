@@ -4,21 +4,33 @@ namespace LockServerAPI.Models.Lock
 {
     public class LockDataAccess : BaseDataAccess, ILockDataAccess
     {
+        /// <summary>
+        /// Ctr
+        /// </summary>
+        /// <param name="database"></param>
+        /// <param name="database">Database context</param>
         public LockDataAccess(DatabaseContext database)
             : base(database)
         {
         }
 
-        public string RegisterLock(string id)
+        /// <summary>
+        /// Creates new record for Lock table
+        /// </summary>
+        /// <param name="id">Lock identifier</param>
+        /// <param name="config">Connection configuration</param>
+        /// <returns></returns>
+        public string RegisterLock(string id, string config)
         {
-            var new_lock = new Lock()
+            var newLock = new Lock()
             {
-                Id = id
+                Id = id,
+                Config = config
             };
-            new_lock.GenerateDeviceId();
-            Database.Locks.Add(new_lock);
+            newLock.GenerateDeviceId();
+            Database.Locks.Add(newLock);
             Database.SaveChanges();
-            return new_lock.DeviceId;
+            return newLock.DeviceId;
         }
     }
 }

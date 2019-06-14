@@ -13,6 +13,7 @@ namespace LockServerAPI.Models.User
         /// Ctr
         /// </summary>
         /// <param name="configuration">Configuration</param>
+        /// <param name="database">Database context</param>
         public UserDataAccess(IConfiguration configuration, DatabaseContext database)
             : base(database)
         {
@@ -22,8 +23,9 @@ namespace LockServerAPI.Models.User
         /// <summary>
         /// Find user in database
         /// </summary>
-        /// <param name="user">User</param>
-        /// <returns>User id</returns>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
+        /// <returns>Is user found/returns>
         public bool FindUser(string username, string password)
         {
             var result = false;

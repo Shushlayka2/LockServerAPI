@@ -10,7 +10,11 @@ namespace LockServerAPI.Models.Code
         public int Id { get; set; }
         public string CodeVal { get; set; }
         public string LockId { get; set; }
+        public string Config { get; set; }
 
+        /// <summary>
+        /// Generates lock activation code
+        /// </summary>
         public void GenerateSecretCode()
         {
             var random = new Random();
@@ -28,11 +32,6 @@ namespace LockServerAPI.Models.Code
                 }
             }
             CodeVal = result.ToString();
-        }
-
-        public void GenerateLockId()
-        {
-            LockId = Guid.NewGuid().ToString();
         }
     }
 }

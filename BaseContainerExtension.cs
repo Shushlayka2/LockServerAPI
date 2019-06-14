@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LockServerAPI.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Unity;
 using Unity.Extension;
@@ -19,6 +20,7 @@ namespace LockServerAPI
             Container.RegisterInstance(Container);
             Container.RegisterInstance(Configuration);
             Container.RegisterType<AuthOptions>(TypeLifetime.Singleton);
+            Container.RegisterType<IIoTServiceProxy, IoTServiceProxy>();
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             var options = optionsBuilder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")).Options;
             Container.RegisterInstance(new DatabaseContext(options));

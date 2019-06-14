@@ -6,8 +6,8 @@ namespace LockServerAPI.Models.Code
     public interface ICodeDataAccess : IDisposable
     {
         List<Code> GetCodes();
-        string FindCode(string code);
-        void GenerateCode();
+        (string lockId, string config) FindCode(string code);
+        void GenerateCode(string lockId, string config);
         void RemoveCode(Code code);
     }
 }

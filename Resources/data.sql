@@ -6,36 +6,128 @@ drop table if exists referencedata.codes cascade;
 drop view if exists referencedata.decrypted_codes;
 drop trigger if exists encrypt_user on referencedata.users;
 drop trigger if exists encrypt_code on referencedata.codes;
-drop trigger if exists encrypt_device_id on referencedata.locks;
+drop trigger if exists encrypt_lock on referencedata.locks;
 drop function if exists encrypt_user();
 drop function if exists encrypt_code();
-drop function if exists encrypt_device_id();
+drop function if exists encrypt_lock();
 drop function if exists search_user(text, text);
 drop function if exists search_code(text);
+drop function if exists remove_code(text, text);
 drop function if exists search_device(text);
 drop extension if exists pgcrypto;
 
 create table referencedata.users
 (
   id serial primary key,
-  username text not null,
+  username text not null unique,
   password text not null
 );
 
 create table referencedata.locks
 (
   id text primary key,
-  device_id text not null
+  device_id text not null unique,
+  config text not null unique
 );
 
 create table referencedata.codes
 (
   id serial primary key,
-  code text not null,
-  lock_id text not null
+  code text not null unique,
+  lock_id text not null unique,
+  config text not null unique
 );
 
 create extension pgcrypto;
+
+create or replace function encrypt_user() returns trigger as $encrypt_user$
+begin
+    new.password = crypt(new.password, gen_salt('bf'));
+    return new;
+end;
+$encrypt_user$ language plpgsql;
+
+create trigger encrypt_user before insert or update on referencedata.users
+for each row execute procedure encrypt_user();
+
+create or replace function search_user(username_param text, password_param text)
+returns boolean as $$
+begin
+    perform  from referencedata.users where username = username_param and password = crypt(password_param, password);
+    return FOUND;
+end;
+$$ language plpgsql;
+
+create or replace function encrypt_code() returns trigger as $encrypt_code$
+begin
+    new.code = pgp_pub_encrypt(new.code, dearmor('-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQENBFzML9EBCACr0Zt4SzFS9BP8oB9oVKqBgw2NPGtOwHl6AVLeNmw6XHhShfnZ
+Bk0ZxcXNz8iHBHBXa8E6HbW7BXSlIvFCbhGr6OqqNtoFwBKqNXCZ/ClkAzJCZ2bF
+pp2vuZCWV9w9szGrBsEXJ6/xwuAqHCs6gDRizhMJaxKa3BEJu7XBujDRj+qXVovl
+33HREn2/eDN/RimNqGPk0MQhA3WFCpNHjtEMlaHQoaq2sH7hjvBop99VaNbczhzO
+AVNz2n4LIUxdf6/h370qwLcEneKbNc2EZmZuti8oWaRLNUX+ARGaj4KBqmVpUEdI
+ge9ouymH0+QV2AShS1yteZYibAAvOQq+InRpABEBAAG0JkxhdHlwb3YgQnVsYXQg
+PEJTTGF0eXBvdkBzdHVkLmtwZnUucnU+iQFUBBMBCAA+FiEEU4mWqe/mHH80P86A
+CPQVGCFcK8AFAlzML9ECGwMFCQPCZwAFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AA
+CgkQCPQVGCFcK8BxAggAjbdVhXNyNhq5suR68Hqbjv0igEA4ufHw+GdWxOqWI09u
+6fLcvVVHJQiKtckwLPuNJNBnxcbIIFaVL26vs+gZouEr2RgWBrbpgAOKX6FUoi27
+5WHBxOqAvfDg68Miarsoa0tzECk3j0KKCHxZA38Iwf52/zjEF7MkzGrsBWnR0SBd
+Viuyr/rl0ZzPu2DEGa4WDn8/f7mX93ZWIJ5E3cx72I9pjUFhN3n981u+E2vybl8P
+sZCwkmN4T/aYtxoE9GVEQPYsHtt2FGbNGpR1AftDZtYhQDAP62ZR68bO2RB/HQ7B
+u+7PFLg6nMWUHsbvul0Ba5+OBLoBEUoKS60dW7OssrkBDQRczC/RAQgAw1j5vZEd
+aeobzzsYL9c56816rGPpXbaOUjAX7IVZYAbVbLPBx0lxZ0SADmTHHh3CVHYVFElG
+Hs4u0IcE2c7JnoSJpnSQoW3lMGdduIt5Ogrnc8ETwNQffJUDABrP/B1YrbOVNMOF
+XokUu8qIVpOmqL/Lqym982zZjExZdInok7izlYua4tCxrVEY/UR06bs2MmMM/S4R
+yI2rRgRxPdNjbnPhlxhpATY9LnsUCT77hUhdwMXLwWMvhqPhSypakgiXkg9Xy1eT
+Ar4SvT3XD/myVHqTbnHF7v61tcMVqV6f+Xnjf2IBzaXizeF7cyck3S0+yN9Ggs/r
+xCR/tEYtBSIf1QARAQABiQE8BBgBCAAmFiEEU4mWqe/mHH80P86ACPQVGCFcK8AF
+AlzML9ECGwwFCQPCZwAACgkQCPQVGCFcK8BJ/wf+P6koAkP/C99nwGtBDJd20A/Y
+SFH2zEW1Iz2gRR4x71263+47d4KojKJmQD+TAGjk8ktYS5qMDW2QQ5exd0cf9dlg
+mf138Lcxk37X9zdL3JH09r31fCge5/lkdgyRy3zROA71liY8KTtXDVo4UIgBQ0iO
+mmeN5iQyA5RvzUKgYbwBvup5PgeLAzyqJQiyjKigA+/e1sk15TytrI2a4Gki+obT
+xeRhyJqiQp/P03e9Tff8rX02SjyOIv+ryZKJ8JBWwTkvA/1JfNK0bbeaQN2ca5f9
++sY6PKErUS441BjkKRZ2kbRopfqZIABD5J/VPMru4HjCeReNe0/dOgad+ATIyQ==
+=UHza
+-----END PGP PUBLIC KEY BLOCK-----
+'));
+    new.config = pgp_pub_encrypt(new.config, dearmor('-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQENBFzML9EBCACr0Zt4SzFS9BP8oB9oVKqBgw2NPGtOwHl6AVLeNmw6XHhShfnZ
+Bk0ZxcXNz8iHBHBXa8E6HbW7BXSlIvFCbhGr6OqqNtoFwBKqNXCZ/ClkAzJCZ2bF
+pp2vuZCWV9w9szGrBsEXJ6/xwuAqHCs6gDRizhMJaxKa3BEJu7XBujDRj+qXVovl
+33HREn2/eDN/RimNqGPk0MQhA3WFCpNHjtEMlaHQoaq2sH7hjvBop99VaNbczhzO
+AVNz2n4LIUxdf6/h370qwLcEneKbNc2EZmZuti8oWaRLNUX+ARGaj4KBqmVpUEdI
+ge9ouymH0+QV2AShS1yteZYibAAvOQq+InRpABEBAAG0JkxhdHlwb3YgQnVsYXQg
+PEJTTGF0eXBvdkBzdHVkLmtwZnUucnU+iQFUBBMBCAA+FiEEU4mWqe/mHH80P86A
+CPQVGCFcK8AFAlzML9ECGwMFCQPCZwAFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AA
+CgkQCPQVGCFcK8BxAggAjbdVhXNyNhq5suR68Hqbjv0igEA4ufHw+GdWxOqWI09u
+6fLcvVVHJQiKtckwLPuNJNBnxcbIIFaVL26vs+gZouEr2RgWBrbpgAOKX6FUoi27
+5WHBxOqAvfDg68Miarsoa0tzECk3j0KKCHxZA38Iwf52/zjEF7MkzGrsBWnR0SBd
+Viuyr/rl0ZzPu2DEGa4WDn8/f7mX93ZWIJ5E3cx72I9pjUFhN3n981u+E2vybl8P
+sZCwkmN4T/aYtxoE9GVEQPYsHtt2FGbNGpR1AftDZtYhQDAP62ZR68bO2RB/HQ7B
+u+7PFLg6nMWUHsbvul0Ba5+OBLoBEUoKS60dW7OssrkBDQRczC/RAQgAw1j5vZEd
+aeobzzsYL9c56816rGPpXbaOUjAX7IVZYAbVbLPBx0lxZ0SADmTHHh3CVHYVFElG
+Hs4u0IcE2c7JnoSJpnSQoW3lMGdduIt5Ogrnc8ETwNQffJUDABrP/B1YrbOVNMOF
+XokUu8qIVpOmqL/Lqym982zZjExZdInok7izlYua4tCxrVEY/UR06bs2MmMM/S4R
+yI2rRgRxPdNjbnPhlxhpATY9LnsUCT77hUhdwMXLwWMvhqPhSypakgiXkg9Xy1eT
+Ar4SvT3XD/myVHqTbnHF7v61tcMVqV6f+Xnjf2IBzaXizeF7cyck3S0+yN9Ggs/r
+xCR/tEYtBSIf1QARAQABiQE8BBgBCAAmFiEEU4mWqe/mHH80P86ACPQVGCFcK8AF
+AlzML9ECGwwFCQPCZwAACgkQCPQVGCFcK8BJ/wf+P6koAkP/C99nwGtBDJd20A/Y
+SFH2zEW1Iz2gRR4x71263+47d4KojKJmQD+TAGjk8ktYS5qMDW2QQ5exd0cf9dlg
+mf138Lcxk37X9zdL3JH09r31fCge5/lkdgyRy3zROA71liY8KTtXDVo4UIgBQ0iO
+mmeN5iQyA5RvzUKgYbwBvup5PgeLAzyqJQiyjKigA+/e1sk15TytrI2a4Gki+obT
+xeRhyJqiQp/P03e9Tff8rX02SjyOIv+ryZKJ8JBWwTkvA/1JfNK0bbeaQN2ca5f9
++sY6PKErUS441BjkKRZ2kbRopfqZIABD5J/VPMru4HjCeReNe0/dOgad+ATIyQ==
+=UHza
+-----END PGP PUBLIC KEY BLOCK-----
+'));
+    return new;
+end;
+$encrypt_code$ language plpgsql;
+
+create trigger encrypt_code before insert or update on referencedata.codes
+for each row execute procedure encrypt_code();
 
 create or replace view referencedata.decrypted_codes as
   select id, pgp_pub_decrypt(code::bytea, dearmor('-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -97,70 +189,7 @@ htPF5GHImqJCn8/Td71N9/ytfTZKPI4i/6vJkonwkFbBOS8D/Ul80rRtt5pA3Zxr
 l/36xjo8oStRLjjUGOQpFnaRtGil+pkgAEPkn9U8yu7geMJ5F417T906Bp34BMjJ
 =Mb/l
 -----END PGP PRIVATE KEY BLOCK-----
-'), 'asehan57') as code, lock_id
-  from referencedata.codes;
-
-create or replace function encrypt_user() returns trigger as $encrypt_user$
-begin
-    new.password = crypt(new.password, gen_salt('bf'));
-    return new;
-end;
-$encrypt_user$ language plpgsql;
-
-create trigger encrypt_user before insert or update on referencedata.users
-for each row execute procedure encrypt_user();
-
-create or replace function search_user(username_param text, password_param text)
-returns boolean as $$
-begin
-    perform  from referencedata.users where username = username_param and password = crypt(password_param, password);
-    return FOUND;
-end;
-$$ language plpgsql;
-
-create or replace function encrypt_code() returns trigger as $encrypt_code$
-begin
-    new.code = pgp_pub_encrypt(new.code, dearmor('-----BEGIN PGP PUBLIC KEY BLOCK-----
-
-mQENBFzML9EBCACr0Zt4SzFS9BP8oB9oVKqBgw2NPGtOwHl6AVLeNmw6XHhShfnZ
-Bk0ZxcXNz8iHBHBXa8E6HbW7BXSlIvFCbhGr6OqqNtoFwBKqNXCZ/ClkAzJCZ2bF
-pp2vuZCWV9w9szGrBsEXJ6/xwuAqHCs6gDRizhMJaxKa3BEJu7XBujDRj+qXVovl
-33HREn2/eDN/RimNqGPk0MQhA3WFCpNHjtEMlaHQoaq2sH7hjvBop99VaNbczhzO
-AVNz2n4LIUxdf6/h370qwLcEneKbNc2EZmZuti8oWaRLNUX+ARGaj4KBqmVpUEdI
-ge9ouymH0+QV2AShS1yteZYibAAvOQq+InRpABEBAAG0JkxhdHlwb3YgQnVsYXQg
-PEJTTGF0eXBvdkBzdHVkLmtwZnUucnU+iQFUBBMBCAA+FiEEU4mWqe/mHH80P86A
-CPQVGCFcK8AFAlzML9ECGwMFCQPCZwAFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AA
-CgkQCPQVGCFcK8BxAggAjbdVhXNyNhq5suR68Hqbjv0igEA4ufHw+GdWxOqWI09u
-6fLcvVVHJQiKtckwLPuNJNBnxcbIIFaVL26vs+gZouEr2RgWBrbpgAOKX6FUoi27
-5WHBxOqAvfDg68Miarsoa0tzECk3j0KKCHxZA38Iwf52/zjEF7MkzGrsBWnR0SBd
-Viuyr/rl0ZzPu2DEGa4WDn8/f7mX93ZWIJ5E3cx72I9pjUFhN3n981u+E2vybl8P
-sZCwkmN4T/aYtxoE9GVEQPYsHtt2FGbNGpR1AftDZtYhQDAP62ZR68bO2RB/HQ7B
-u+7PFLg6nMWUHsbvul0Ba5+OBLoBEUoKS60dW7OssrkBDQRczC/RAQgAw1j5vZEd
-aeobzzsYL9c56816rGPpXbaOUjAX7IVZYAbVbLPBx0lxZ0SADmTHHh3CVHYVFElG
-Hs4u0IcE2c7JnoSJpnSQoW3lMGdduIt5Ogrnc8ETwNQffJUDABrP/B1YrbOVNMOF
-XokUu8qIVpOmqL/Lqym982zZjExZdInok7izlYua4tCxrVEY/UR06bs2MmMM/S4R
-yI2rRgRxPdNjbnPhlxhpATY9LnsUCT77hUhdwMXLwWMvhqPhSypakgiXkg9Xy1eT
-Ar4SvT3XD/myVHqTbnHF7v61tcMVqV6f+Xnjf2IBzaXizeF7cyck3S0+yN9Ggs/r
-xCR/tEYtBSIf1QARAQABiQE8BBgBCAAmFiEEU4mWqe/mHH80P86ACPQVGCFcK8AF
-AlzML9ECGwwFCQPCZwAACgkQCPQVGCFcK8BJ/wf+P6koAkP/C99nwGtBDJd20A/Y
-SFH2zEW1Iz2gRR4x71263+47d4KojKJmQD+TAGjk8ktYS5qMDW2QQ5exd0cf9dlg
-mf138Lcxk37X9zdL3JH09r31fCge5/lkdgyRy3zROA71liY8KTtXDVo4UIgBQ0iO
-mmeN5iQyA5RvzUKgYbwBvup5PgeLAzyqJQiyjKigA+/e1sk15TytrI2a4Gki+obT
-xeRhyJqiQp/P03e9Tff8rX02SjyOIv+ryZKJ8JBWwTkvA/1JfNK0bbeaQN2ca5f9
-+sY6PKErUS441BjkKRZ2kbRopfqZIABD5J/VPMru4HjCeReNe0/dOgad+ATIyQ==
-=UHza
------END PGP PUBLIC KEY BLOCK-----
-'));
-    return new;
-end;
-$encrypt_code$ language plpgsql;
-
-create trigger encrypt_code before insert or update on referencedata.codes
-for each row execute procedure encrypt_code();
-
-create or replace function search_code(code_param text, out result text) as $$
-begin
-  select lock_id into result from referencedata.codes where code_param = pgp_pub_decrypt(code::bytea, dearmor('-----BEGIN PGP PRIVATE KEY BLOCK-----
+'), 'asehan57') as code, lock_id, pgp_pub_decrypt(config::bytea, dearmor('-----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lQPGBFzML9EBCACr0Zt4SzFS9BP8oB9oVKqBgw2NPGtOwHl6AVLeNmw6XHhShfnZ
 Bk0ZxcXNz8iHBHBXa8E6HbW7BXSlIvFCbhGr6OqqNtoFwBKqNXCZ/ClkAzJCZ2bF
@@ -219,27 +248,33 @@ htPF5GHImqJCn8/Td71N9/ytfTZKPI4i/6vJkonwkFbBOS8D/Ul80rRtt5pA3Zxr
 l/36xjo8oStRLjjUGOQpFnaRtGil+pkgAEPkn9U8yu7geMJ5F417T906Bp34BMjJ
 =Mb/l
 -----END PGP PRIVATE KEY BLOCK-----
-'), 'asehan57');
+'), 'asehan57') as config
+  from referencedata.codes;
+
+create or replace function search_code(code_param text, out lock_id_r text, out config_r text) as $$
+begin
+  select lock_id, config into lock_id_r, config_r from referencedata.decrypted_codes where code_param = code;
 end;
 $$ language plpgsql;
 
-create or replace function remove_code(id_param integer, code_param text, lock_id_param text)
+create or replace function remove_code(code_param text, lock_id_param text)
 returns void as $$
 begin
     delete from referencedata.codes
-    where id = id_param and lock_id = search_code(code_param) and lock_id = lock_id_param;
+    where lock_id = (select lock_id_r from search_code(code_param)) and lock_id = lock_id_param;
 end;
 $$ language plpgsql;
 
-create or replace function encrypt_device_id() returns trigger as $encrypt_device_id$
+create or replace function encrypt_lock() returns trigger as $encrypt_lock$
 begin
     new.device_id = crypt(new.device_id, gen_salt('bf'));
+    new.config = crypt(new.config, gen_salt('bf'));
     return new;
 end;
-$encrypt_device_id$ language plpgsql;
+$encrypt_lock$ language plpgsql;
 
-create trigger encrypt_device_id before insert or update on referencedata.locks
-for each row execute procedure encrypt_device_id();
+create trigger encrypt_lock before insert or update on referencedata.locks
+for each row execute procedure encrypt_lock();
 
 create or replace function search_device(text)
 returns boolean as $$

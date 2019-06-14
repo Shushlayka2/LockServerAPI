@@ -6,6 +6,7 @@ namespace LockServerAPI.Models.Lock
     {
         public string Id { get; set; }
         public string DeviceId { get; set; }
+        public string Config { get; set; }
 
         public void GenerateDeviceId()
         {

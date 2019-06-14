@@ -1,5 +1,6 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
 using LockServerAPI.Models.Code;
+using LockServerAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -30,15 +31,15 @@ namespace LockServerAPI.Controllers
             return new JsonResult(result);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("generatecode")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult GenerateCode()
+        public IActionResult GenerateCode([FromBody]CodeViewModel model)
         {
             List<Code> result = null;
             using (var dataAccess = DataAccessService.GetDataAccess<ICodeDataAccess>())
             {
-                dataAccess.GenerateCode();
+                dataAccess.GenerateCode(model.LockId, model.Config);
                 result = dataAccess.GetCodes();
             }
             return new JsonResult(result);

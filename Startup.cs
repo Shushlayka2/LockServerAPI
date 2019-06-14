@@ -36,7 +36,6 @@ namespace LockServerAPI
                 .AddJwtBearer(options =>
                 {
                     var authOptions = Container.Resolve<AuthOptions>();
-                    options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -48,7 +47,6 @@ namespace LockServerAPI
                         ValidateIssuerSigningKey = true,
                     };
                 });
-            //services.AddDbContext<DatabaseContext>(builder => builder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

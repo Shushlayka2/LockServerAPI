@@ -40,6 +40,10 @@ namespace LockServerAPI
                 entity.Property(e => e.LockId)
                     .IsRequired()
                     .HasColumnName("lock_id");
+
+                entity.Property(e => e.Config)
+                    .IsRequired()
+                    .HasColumnName("config");
             });
 
             modelBuilder.Entity<Lock>(entity =>
@@ -53,6 +57,10 @@ namespace LockServerAPI
                 entity.Property(e => e.DeviceId)
                     .IsRequired()
                     .HasColumnName("device_id");
+
+                entity.Property(e => e.Config)
+                    .IsRequired()
+                    .HasColumnName("config");
             });
 
             modelBuilder.Entity<User>(entity =>
