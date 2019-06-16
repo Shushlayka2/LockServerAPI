@@ -85,7 +85,7 @@ namespace LockServerAPI.Models.Code
             }
             catch (Exception ex)
             {
-                var test = ex.Message;
+                Console.WriteLine(ex.Message);
             }
         }
 

@@ -60,14 +60,8 @@ namespace LockServerAPI.Controllers
                            select elem).FirstOrDefault();
                 if (code != null)
                 {
-                    if (model.LockId != null)
-                    {
-                        code.LockId = model.LockId;
-                    }
-                    if (model.Config != null)
-                    {
-                        code.Config = model.Config;
-                    }
+                    code.LockId = model.LockId ?? code.LockId;
+                    code.Config = model.Config ?? code.Config;
                     dataAccess.EditCode(code);
                     result = dataAccess.GetCodes();
                 }
