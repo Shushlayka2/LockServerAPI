@@ -1,12 +1,10 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
 using LockServerAPI.ViewModels;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 
 namespace LockServerAPI.Models.Code
