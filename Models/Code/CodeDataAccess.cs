@@ -85,7 +85,7 @@ namespace LockServerAPI.Models.Code
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Database.Find(typeof(Code), ex);
             }
         }
 
