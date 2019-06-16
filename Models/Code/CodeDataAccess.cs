@@ -4,6 +4,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 
 namespace LockServerAPI.Models.Code
@@ -85,7 +86,10 @@ namespace LockServerAPI.Models.Code
             }
             catch (Exception ex)
             {
-                Database.Find(typeof(Code), ex);
+                using (StreamWriter sw = new StreamWriter("log.txt", false, System.Text.Encoding.Default))
+                {
+                    sw.WriteLine(ex.Message);
+                }
             }
         }
 
