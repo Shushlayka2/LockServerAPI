@@ -1,4 +1,5 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
@@ -77,11 +78,13 @@ namespace LockServerAPI.Models.Code
             Database.SaveChanges();
         }
 
-        public void EditCode(Code code)
+        public void EditCode(Code oldCode, Code newCode)
         {
             try
             {
-                Database.Codes.Update(code);
+                Database.Codes.Update(newCode);
+                Database.Entry(oldCode).State = EntityState.Detached;
+                Database.Entry(newCode).State = EntityState.Modified;
                 Database.SaveChanges();
             }
             catch (Exception ex)

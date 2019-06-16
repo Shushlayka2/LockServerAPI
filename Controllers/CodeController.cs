@@ -52,21 +52,22 @@ namespace LockServerAPI.Controllers
         public IActionResult EditCode([FromBody]CodeViewModel model)
         {
             List<Code> result = null;
-            Code code = null;
+            Code oldCode = null;
             using (var dataAccess = DataAccessService.GetDataAccess<ICodeDataAccess>())
             {
-                code = (from elem in dataAccess.GetCodes()
+                oldCode = (from elem in dataAccess.GetCodes()
                            where elem.Id == model.Id
                            select elem).FirstOrDefault();
-                if (code != null)
+                if (oldCode != null)
                 {
-                    code.LockId = model.LockId ?? code.LockId;
-                    code.Config = model.Config ?? code.Config;
-                    dataAccess.EditCode(code);
+                    var newCode = oldCode;
+                    newCode.LockId = model.LockId ?? newCode.LockId;
+                    newCode.Config = model.Config ?? newCode.Config;
+                    dataAccess.EditCode(oldCode, newCode);
                     result = dataAccess.GetCodes();
                 }
             }
-            if (code == null)
+            if (oldCode == null)
             {
                 return StatusCode(500);
             }
