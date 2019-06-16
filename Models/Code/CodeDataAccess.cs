@@ -78,8 +78,15 @@ namespace LockServerAPI.Models.Code
 
         public void EditCode(Code code)
         {
-            Database.Codes.Update(code);
-            Database.SaveChanges();
+            try
+            {
+                Database.Codes.Update(code);
+                Database.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                var test = ex.Message;
+            }
         }
 
         /// <summary>

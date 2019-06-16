@@ -52,9 +52,10 @@ namespace LockServerAPI.Controllers
         public IActionResult EditCode([FromBody]CodeViewModel model)
         {
             List<Code> result = null;
+            Code code = null;
             using (var dataAccess = DataAccessService.GetDataAccess<ICodeDataAccess>())
             {
-                var code = (from elem in dataAccess.GetCodes()
+                code = (from elem in dataAccess.GetCodes()
                            where elem.Id == model.Id
                            select elem).FirstOrDefault();
                 if (code != null)
@@ -70,12 +71,15 @@ namespace LockServerAPI.Controllers
                     dataAccess.EditCode(code);
                     result = dataAccess.GetCodes();
                 }
-                else
-                {
-                    return StatusCode(500);
-                }
             }
-            return new JsonResult(result);
+            if (code == null)
+            {
+                return StatusCode(500);
+            }
+            else
+            {
+                return new JsonResult(result);
+            }
         }
 
         [HttpPost]
