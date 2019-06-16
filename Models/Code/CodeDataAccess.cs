@@ -1,4 +1,5 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
+using LockServerAPI.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -78,22 +79,23 @@ namespace LockServerAPI.Models.Code
             Database.SaveChanges();
         }
 
-        public void EditCode(Code oldCode, Code newCode)
+        public bool EditCode(CodeViewModel model)
         {
-            try
+            var oldCode = (from elem in GetCodes()
+                           where elem.Id == model.Id
+                           select elem).FirstOrDefault();
+            var newCode = oldCode;
+            newCode.LockId = model.LockId ?? newCode.LockId;
+            newCode.Config = model.Config ?? newCode.Config;
+            if (oldCode == null)
             {
-                Database.Codes.Update(newCode);
-                Database.Entry(oldCode).State = EntityState.Detached;
-                Database.Entry(newCode).State = EntityState.Modified;
-                Database.SaveChanges();
+                return false;
             }
-            catch (Exception ex)
-            {
-                using (StreamWriter sw = new StreamWriter("log.txt", false, System.Text.Encoding.Default))
-                {
-                    sw.WriteLine(ex.Message);
-                }
-            }
+            Database.Codes.Update(newCode);
+            Database.Entry(oldCode).State = EntityState.Detached;
+            Database.Entry(newCode).State = EntityState.Modified;
+            Database.SaveChanges();
+            return true;
         }
 
         /// <summary>
