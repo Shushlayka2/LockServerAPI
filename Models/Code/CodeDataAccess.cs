@@ -79,7 +79,7 @@ namespace LockServerAPI.Models.Code
             Database.SaveChanges();
         }
 
-        public bool EditCode(CodeViewModel model)
+        public void EditCode(CodeViewModel model)
         {
             var oldCode = (from elem in GetCodes()
                            where elem.Id == model.Id
@@ -87,15 +87,25 @@ namespace LockServerAPI.Models.Code
             var newCode = oldCode;
             newCode.LockId = model.LockId ?? newCode.LockId;
             newCode.Config = model.Config ?? newCode.Config;
-            if (oldCode == null)
+            using (var conn = new NpgsqlConnection(Configuration.GetConnectionString("DefaultConnection")))
             {
-                return false;
+                var query = @"select from edit_code(:id, :code, :lock_id, :config)";
+                conn.Open();
+                try
+                {
+                    var pgcom = new NpgsqlCommand(query, conn);
+                    pgcom.CommandType = CommandType.Text;
+                    pgcom.Parameters.AddWithValue("id", newCode.Id);
+                    pgcom.Parameters.AddWithValue("code", newCode.CodeVal);
+                    pgcom.Parameters.AddWithValue("lock_id", newCode.LockId);
+                    pgcom.Parameters.AddWithValue("config", newCode.Config);
+                    var pgreader = pgcom.ExecuteReader();
+                }
+                finally
+                {
+                    conn.Close();
+                }
             }
-            Database.Codes.Update(newCode);
-            Database.Entry(oldCode).State = EntityState.Detached;
-            Database.Entry(newCode).State = EntityState.Modified;
-            Database.SaveChanges();
-            return true;
         }
 
         /// <summary>

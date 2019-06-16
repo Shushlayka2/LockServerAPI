@@ -12,6 +12,7 @@ drop function if exists encrypt_code();
 drop function if exists encrypt_lock();
 drop function if exists search_user(text, text);
 drop function if exists search_code(text);
+drop function if exists edit_code(numeric, text, text, text);
 drop function if exists remove_code(text, text);
 drop function if exists search_device(text);
 drop extension if exists pgcrypto;
@@ -254,6 +255,14 @@ l/36xjo8oStRLjjUGOQpFnaRtGil+pkgAEPkn9U8yu7geMJ5F417T906Bp34BMjJ
 create or replace function search_code(code_param text, out lock_id_r text, out config_r text) as $$
 begin
   select lock_id, config into lock_id_r, config_r from referencedata.decrypted_codes where code_param = code;
+end;
+$$ language plpgsql;
+
+create or replace function edit_code(id_param numeric, code_param text, lock_id_param text, config_param text)
+returns void as $$
+begin
+    update referencedata.codes set code = code_param, lock_id = lock_id_param, config = config_param
+      where id = id_param;
 end;
 $$ language plpgsql;
 

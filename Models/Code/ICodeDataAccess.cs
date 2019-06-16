@@ -9,7 +9,7 @@ namespace LockServerAPI.Models.Code
         List<Code> GetCodes();
         (string lockId, string config) FindCode(string code);
         void GenerateCode(string lockId, string config);
-        bool EditCode(CodeViewModel model);
+        void EditCode(CodeViewModel model);
         void RemoveCode(Code code);
     }
 }

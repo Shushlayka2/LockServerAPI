@@ -52,19 +52,11 @@ namespace LockServerAPI.Controllers
         public IActionResult EditCode([FromBody]CodeViewModel model)
         {
             List<Code> result = null;
-            bool isEdited = false;
             using (var dataAccess = DataAccessService.GetDataAccess<ICodeDataAccess>())
             {
-                isEdited = dataAccess.EditCode(model);
+                dataAccess.EditCode(model);
             }
-            if (!isEdited)
-            {
-                return StatusCode(500);
-            }
-            else
-            {
-                return new JsonResult(result);
-            }
+            return new JsonResult(result);
         }
 
         [HttpPost]
