@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Unity;
 
 namespace LockServerAPI.Models.Code
 {
@@ -81,11 +80,8 @@ namespace LockServerAPI.Models.Code
         {
             try
             {
-                using (var db = Startup.Container.Resolve<DatabaseContext>())
-                {
-                    db.Codes.Update(code);
-                    db.SaveChanges();
-                }
+                Database.Codes.Update(code);
+                Database.SaveChanges();
             }
             catch (Exception ex)
             {
