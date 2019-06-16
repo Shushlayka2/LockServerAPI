@@ -76,6 +76,12 @@ namespace LockServerAPI.Models.Code
             Database.SaveChanges();
         }
 
+        public void EditCode(Code code)
+        {
+            Database.Codes.Update(code);
+            Database.SaveChanges();
+        }
+
         /// <summary>
         /// Delete the code
         /// </summary>

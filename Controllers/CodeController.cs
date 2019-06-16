@@ -4,6 +4,7 @@ using LockServerAPI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LockServerAPI.Controllers
 {
@@ -41,6 +42,38 @@ namespace LockServerAPI.Controllers
             {
                 dataAccess.GenerateCode(model.LockId, model.Config);
                 result = dataAccess.GetCodes();
+            }
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        [Route("editcode")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult EditCode([FromBody]CodeViewModel model)
+        {
+            List<Code> result = null;
+            using (var dataAccess = DataAccessService.GetDataAccess<ICodeDataAccess>())
+            {
+                var code = (from elem in dataAccess.GetCodes()
+                           where elem.Id == model.Id
+                           select elem).FirstOrDefault();
+                if (code != null)
+                {
+                    if (model.LockId != null)
+                    {
+                        code.LockId = model.LockId;
+                    }
+                    if (model.Config != null)
+                    {
+                        code.Config = model.Config;
+                    }
+                    dataAccess.EditCode(code);
+                    result = dataAccess.GetCodes();
+                }
+                else
+                {
+                    return StatusCode(500);
+                }
             }
             return new JsonResult(result);
         }

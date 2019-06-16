@@ -8,6 +8,7 @@ namespace LockServerAPI.Models.Code
         List<Code> GetCodes();
         (string lockId, string config) FindCode(string code);
         void GenerateCode(string lockId, string config);
+        void EditCode(Code code);
         void RemoveCode(Code code);
     }
 }
