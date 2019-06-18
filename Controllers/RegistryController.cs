@@ -14,22 +14,19 @@ namespace LockServerAPI.Controllers
     {
         protected IDataAccessService DataAccessService { get; }
 
-        protected IIoTServiceProxy IoTServiceProxy { get; }
-
-        public RegistryController(IDataAccessService dataAccessService, IIoTServiceProxy _IoTServiceProxy)
+        public RegistryController(IDataAccessService dataAccessService)
         {
             DataAccessService = dataAccessService;
-            IoTServiceProxy = _IoTServiceProxy;
         }
 
         [HttpGet]
-        public IActionResult Test()
+        public string Get()
         {
-            return new JsonResult("test");
+            return "test";
         }
 
         [HttpPost]
-        public IActionResult RegisterDevice([FromBody] string codeVal)
+        public async Task<IActionResult> RegisterDevice([FromBody] string codeVal)
         {
             try
             {
@@ -54,10 +51,8 @@ namespace LockServerAPI.Controllers
                 }
 
                 //Transfer deviceId to lock controller
-                var task = IoTServiceProxy.RegisterDevice(deviceId);
-                task.Start();
-                task.Wait();
-                var isRegistered = task.Result;
+                var _IoTServiceProxy = new IoTServiceProxy(tuple.lockId, tuple.config);
+                var isRegistered = await _IoTServiceProxy.RegisterDevice(deviceId);
 
                 if (isRegistered)
                 {
