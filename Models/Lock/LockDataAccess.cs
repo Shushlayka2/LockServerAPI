@@ -1,4 +1,5 @@
 ﻿using LockServerAPI.Models.BaseDataAccesses;
+using Microsoft.EntityFrameworkCore;
 
 namespace LockServerAPI.Models.Lock
 {
@@ -29,6 +30,7 @@ namespace LockServerAPI.Models.Lock
             };
             newLock.GenerateDeviceId();
             Database.Locks.Add(newLock);
+            Database.Entry<Lock>(newLock).State = EntityState.Detached;
             Database.SaveChanges();
             return newLock.DeviceId;
         }
