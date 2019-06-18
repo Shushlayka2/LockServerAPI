@@ -23,7 +23,7 @@ namespace LockServerAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Test([FromBody] string codeVal)
+        public IActionResult Test()
         {
             return new JsonResult("test");
         }
