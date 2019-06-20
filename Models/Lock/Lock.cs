@@ -4,7 +4,8 @@ namespace LockServerAPI.Models.Lock
 {
     public partial class Lock
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
+        public string LockId { get; set; }
         public string DeviceId { get; set; }
         public string Config { get; set; }
 

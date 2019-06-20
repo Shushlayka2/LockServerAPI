@@ -20,7 +20,8 @@ namespace LockServerAPI.Services
         public async Task<bool> RegisterDevice(string deviceId)
         {
             var methodInvocation = new CloudToDeviceMethod("RegisterDevice") { ResponseTimeout = TimeSpan.FromSeconds(30) };
-            methodInvocation.SetPayloadJson(String.Format("{\"deviceId\": \"{0}\"}", deviceId));
+            var msg = "{\"deviceId\": \"" + deviceId + "\"}";
+            methodInvocation.SetPayloadJson(msg);
             var response = await serviceClient.InvokeDeviceMethodAsync(lockId, methodInvocation);
             var isRegistered = bool.Parse(JObject.Parse(response.GetPayloadAsJson())["result"].ToString());
             return isRegistered;

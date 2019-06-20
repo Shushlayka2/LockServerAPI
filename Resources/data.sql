@@ -26,7 +26,8 @@ create table referencedata.users
 
 create table referencedata.locks
 (
-  id text primary key,
+  id serial primary key,
+  lock_id text not null unique,
   device_id text not null unique,
   config text not null unique
 );
@@ -288,7 +289,7 @@ for each row execute procedure encrypt_lock();
 create or replace function search_device(text)
 returns boolean as $$
 begin
-    perform  from referencedata.locks where id = crypt($1, id);
+    perform  from referencedata.locks where device_id = crypt($1, device_id);
     return FOUND;
 end;
 $$ language plpgsql;

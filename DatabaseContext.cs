@@ -52,7 +52,11 @@ namespace LockServerAPI
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.LockId)
+                    .IsRequired()
+                    .HasColumnName("lock_id");
 
                 entity.Property(e => e.DeviceId)
                     .IsRequired()

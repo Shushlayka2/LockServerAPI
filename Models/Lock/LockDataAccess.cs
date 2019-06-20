@@ -21,16 +21,15 @@ namespace LockServerAPI.Models.Lock
         /// <param name="id">Lock identifier</param>
         /// <param name="config">Connection configuration</param>
         /// <returns></returns>
-        public string RegisterLock(string id, string config)
+        public string RegisterLock(string lockId, string config)
         {
             var newLock = new Lock()
             {
-                Id = id,
+                LockId = lockId,
                 Config = config
             };
             newLock.GenerateDeviceId();
             Database.Locks.Add(newLock);
-            Database.Entry<Lock>(newLock).State = EntityState.Detached;
             Database.SaveChanges();
             return newLock.DeviceId;
         }
