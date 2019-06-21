@@ -64,7 +64,7 @@ namespace LockServerAPI.Controllers
                             CodeVal = codeVal
                         });
                     }
-                    return new JsonResult((deviceId, tuple.config));
+                    return new JsonResult((deviceId, tuple.lockId, tuple.config));
                 }
                 else
                 {
